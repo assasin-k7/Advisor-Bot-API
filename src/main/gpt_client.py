@@ -3,7 +3,7 @@ from config import config
 
 openai.api_key = config.GPT_API_KEY
 
-def stream_gpt_response(user_input):
+async def stream_gpt_response(user_input: str):
     response = openai.Completion.create(
         engine="gpt-4",  # Example engine, adjust as needed
         prompt=user_input,

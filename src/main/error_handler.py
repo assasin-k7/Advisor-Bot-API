@@ -1,9 +1,11 @@
-from flask import jsonify
-def register_error_handlers(app):
-    @app.errorhandler(404)
-    def not_found_error(error):
-        return jsonify({"error": "Resource not found"}), 404
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 
-    @app.errorhandler(500)
-    def internal_error(error):
-        return jsonify({"error": "Internal server error"}), 500
+def register_error_handlers(app: FastAPI):
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request, exc: HTTPException):
+        return JSONResponse(status_code=exc.status_code, content={"error": exc.detail})
+
+    @app.exception_handler(Exception)
+    async def generic_exception_handler(request, exc: Exception):
+        return JSONResponse(status_code=500, content={"error": "Internal server error"})

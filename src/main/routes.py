@@ -1,17 +1,19 @@
-from flask import Blueprint, request, jsonify, Response
+from fastapi import APIRouter, Request, HTTPException
+from fastapi.responses import StreamingResponse
 from .gpt_client import stream_gpt_response
 
-main_bp = Blueprint('main', __name__)
+router = APIRouter()
 
-@main_bp.route('/api/advisor', methods=['POST'])
-def advisor():
-    user_input = request.json.get('query')
-    
+@router.post("/api/advisor")
+async def advisor(request: Request):
+    data = await request.json()
+    user_input = data.get("query")
+
     if not user_input:
-        return jsonify({"error": "Query is required"}), 400
+        raise HTTPException(status_code=400, detail="Query is required")
 
-    def generate():
-        for chunk in stream_gpt_response(user_input):
+    async def event_stream():
+        async for chunk in stream_gpt_response(user_input):
             yield chunk
-    
-    return Response(generate(), content_type='text/event-stream')
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
