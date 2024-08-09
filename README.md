@@ -12,6 +12,9 @@ Testing: Includes unit tests to ensure reliability and accuracy.
 ## Setup
 
 1. Clone the repository.
+   ```bash
+   git clone https://github.com/your-username/advisor-bot.git
+   cd advisor-bot
 2. Install the required packages:
    ```bash
    pip install -r requirements.txt
